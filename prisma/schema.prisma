@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id                   Int           @id @default(autoincrement())
+  codeProduit          String        @unique
+  libelle              String
+  norme                String?
+  sommeil              String?
+  acheteur             String?
+  familleAchat         String?
+  stock                Float?
+  valeurStock          Float?
+  consommationAnnuelle Float?
+  pmpa                 Float?
+  miniCommande         Float?
+  qteReappro           Float?
+  delaiReappro         String?
+  preferredMode        String        @default("auto")
+  equivalences         Equivalence[]
+  negotiations         Negotiation[]
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+}
+
+model Equivalence {
+  id              Int       @id @default(autoincrement())
+  product         Product   @relation(fields: [productId], references: [id])
+  productId       Int
+  refFabricant    String
+  fabricant       String
+  equivalenceCode String?
+  famille         String?
+  qteReappro      Float?
+  poids           Float?
+  uniteAchat      String?
+  uniteStock      String?
+  sommeil         String?
+  prixActuel      Float?
+  prixCible       Float?
+  prixObtenu      Float?
+  dateMAJPrix     DateTime?
+  isPreferred     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Negotiation {
+  id                   Int               @id @default(autoincrement())
+  product              Product           @relation(fields: [productId], references: [id])
+  productId            Int
+  campagne             String
+  objectifPrix         Float?
+  objectifReductionPct Float?
+  batna                Float?
+  deadline             DateTime?
+  statut               String            @default("A_LANCER")
+  prixFinal            Float?
+  notesConditions      String?
+  prochaineAction      String?
+  dateRelance          DateTime?
+  steps                NegotiationStep[]
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+}
+
+model NegotiationStep {
+  id            Int         @id @default(autoincrement())
+  negotiation   Negotiation @relation(fields: [negotiationId], references: [id])
+  negotiationId Int
+  date          DateTime
+  action        String
+  note          String?
+}
